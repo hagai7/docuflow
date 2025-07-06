@@ -1,6 +1,6 @@
 # DocuFlow
 
-DocuFlow is a full-stack microservices platform featuring Spring Boot, Angular, RabbitMQ, PostgreSQL, AWS S3, JWT authentication, WebSocket real-time updates, and multi-threaded file-to-PDF conversion.
+DocuFlow is a full-stack microservices platform featuring Spring Boot, Angular, RabbitMQ, PostgreSQL, AWS S3, Docker, JWT authentication, WebSocket real-time updates, and multi-threaded file-to-PDF conversion.
 
 ## Overview
 
