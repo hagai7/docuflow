@@ -1,0 +1,23 @@
+File upload is done via Angular frontend to the backend REST API.
+The backend sends file tasks to RabbitMQ.
+A RabbitMQ worker processes these tasks using multithreading, handling multiple files in parallel.
+
+why need them both?
+
+1. if we had RabbitMQ without multithreading this could happen:
+Your program gets messages from RabbitMQ one by one and processes each file only after finishing the previous one.
+
+Example:
+5 files are waiting in the queue. The program processes file 1 fully before starting file 2, 
+making the others wait a long time. instead we can process them concurrently/in parallel.
+
+2. if we had Multithreading without RabbitMQ this could happen:
+Your program starts a new thread for each uploaded file right away but has no queue to manage tasks.
+
+Example:
+50 users upload files at once, so your program queues 50 tasks in the thread pool. 
+Only 4 run at once, while 46 wait in your app’s memory. 
+This can cause high memory use, slowing or crashing the server. 
+Also, If the app crashes, all waiting tasks are lost.
+With RabbitMQ, tasks are stored outside your app, in RabbitMQ’s own server, on disk and its memory.
+Workers pull tasks gradually, preventing overload and keeping tasks safe if the app crashes.

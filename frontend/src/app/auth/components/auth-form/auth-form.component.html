@@ -1,0 +1,48 @@
+<form [formGroup]="form" (ngSubmit)="onSubmit()" class="auth-form">
+  <mat-form-field appearance="fill" class="full-width">
+    <mat-label>Username</mat-label>
+    <input
+      matInput
+      formControlName="username"
+      autocomplete="username"
+    />
+    <mat-error *ngIf="username.hasError('required')">
+      Username is required
+    </mat-error>
+    <mat-error *ngIf="username.hasError('minlength')">
+      Minimum 4 characters
+    </mat-error>
+    <mat-error *ngIf="username.hasError('pattern')">
+      Only letters, numbers, and underscores
+    </mat-error>
+    <mat-error *ngIf="usernameError">
+      {{ usernameError }}
+    </mat-error>
+  </mat-form-field>
+
+  <mat-form-field appearance="fill" class="full-width">
+    <mat-label>Password</mat-label>
+    <input
+      matInput
+      type="password"
+      formControlName="password"
+      autocomplete="current-password"
+    />
+    <mat-error *ngIf="password.hasError('required')">
+      Password is required
+    </mat-error>
+    <mat-error *ngIf="password.hasError('minlength')">
+      Minimum 6 characters
+    </mat-error>
+  </mat-form-field>
+
+  <button
+    mat-raised-button
+    color="primary"
+    type="submit"
+    [disabled]="form.invalid"
+    class="full-width submit-button"
+  >
+    {{ submitLabel }}
+  </button>
+</form>

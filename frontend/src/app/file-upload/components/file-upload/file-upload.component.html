@@ -1,0 +1,50 @@
+<mat-card class="upload-card">
+  <h2 class="page-title">Upload File</h2>
+
+  <div class="file-input">
+    <button mat-stroked-button color="primary" (click)="fileInput.click()">
+      <mat-icon>attach_file</mat-icon>
+      Choose File
+    </button>
+    <input
+      #fileInput
+      type="file"
+      (change)="onFileSelected($event)"
+      hidden
+    />
+    <span class="filename" *ngIf="selectedFile">{{ selectedFile.name }}</span>
+  </div>
+
+  <button
+    mat-raised-button
+    color="primary"
+    class="full-width submit-button"
+    (click)="upload()"
+    [disabled]="!selectedFile"
+  >
+    Upload
+  </button>
+
+  <mat-progress-bar
+    *ngIf="progress >= 0"
+    mode="determinate"
+    [value]="progress"
+    class="progress-bar"
+  ></mat-progress-bar>
+  <p class="progress-text" *ngIf="progress >= 0">{{ progress }}%</p>
+
+  <p class="message" *ngIf="message">{{ message }}</p>
+
+  <p class="download" *ngIf="downloadUrl">
+    <a
+      mat-button
+      color="accent"
+      [href]="downloadUrl"
+      [download]="uploadedFilename"
+      target="_blank"
+    >
+      <mat-icon>download</mat-icon>
+      Download File
+    </a>
+  </p>
+</mat-card>

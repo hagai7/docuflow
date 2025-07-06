@@ -1,0 +1,55 @@
+.upload-card {
+  max-width: 500px;
+  margin: 2rem auto;
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  border-radius: 8px;
+}
+
+.page-title {
+  text-align: center;
+  margin-bottom: 0;
+}
+
+.file-input {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.filename {
+  font-style: italic;
+  flex-grow: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.full-width {
+  width: 100%;
+}
+
+.submit-button {
+  margin-top: 0.5rem;
+}
+
+.progress-bar {
+  height: 20px;
+  border-radius: 4px;
+}
+
+.progress-text {
+  text-align: center;
+  font-size: 0.9rem;
+}
+
+.message {
+  text-align: center;
+  font-size: 0.95rem;
+}
+
+.download {
+  text-align: center;
+}
