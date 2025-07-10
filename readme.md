@@ -162,9 +162,7 @@ DocuFlow includes three types of automated tests to ensure reliability and catch
    ```
 3. **View Reports**: After execution, check the `target/surefire-reports` and `target/jacoco` directories for detailed test results and coverage reports.
 
-By following these steps, you can quickly verify that all layers of DocuFlow are functioning as expected before deployment.
-
-## Contributing## Contributing
+## Contributing
 
 1. Fork the repo
 2. Create a feature branch
@@ -174,7 +172,3 @@ By following these steps, you can quickly verify that all layers of DocuFlow are
 ## License
 
 MIT (see [LICENSE](LICENSE))
-
-## Contact
-
-Hagai Yehoshafat — [hagai.yehosh@gmail.com](mailto:hagai.yehosh@gmail.com) — [GitHub](https://github.com/hagai007)
