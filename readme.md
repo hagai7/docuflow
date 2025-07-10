@@ -1,31 +1,33 @@
 # DocuFlow
 
-DocuFlow is a full-stack microservices platform featuring Spring Boot, Angular, RabbitMQ, PostgreSQL, AWS S3, JWT authentication, WebSocket real-time updates, and multi-threaded file-to-PDF conversion.
+DocuFlow is a full-stack microservices platform featuring Spring Boot, Angular, RabbitMQ, PostgreSQL, AWS S3, Docker, JWT authentication, WebSocket real-time updates, and multi-threaded file-to-PDF conversion.
 
 ## Overview
 
-- **Backend**: Spring Boot REST API (`/auth` and `/api/files`), JWT-based security
-- **Frontend**: Angular application with file upload and WebSocket progress updates
-- **Messaging**: RabbitMQ queue (`file-processing-queue`) running in Docker
-- **Database**: PostgreSQL for metadata
-- **Storage**: AWS S3 (optional) for PDF files
-- **Processing**: Executor service with 4 threads for concurrent conversion
+* **Backend**: Spring Boot REST API (`/auth` and `/api/files`), JWT-based security
+* **Frontend**: Angular application with file upload and WebSocket progress updates
+* **Messaging**: RabbitMQ queue (`file-processing-queue`) running in Docker
+* **Database**: PostgreSQL for metadata
+* **Storage**: AWS S3 (optional) for PDF files
+* **Processing**: Executor service with 4 threads for concurrent conversion
 
 ## Prerequisites
 
-- Java 17+, Maven 3.6+
-- Node.js 14+, npm
-- Docker & Docker Compose
-- (Optional) AWS credentials (access key, secret key)
+* Java 17+, Maven 3.6+
+* Node.js 14+, npm
+* Docker & Docker Compose
+* (Optional) AWS credentials (access key, secret key)
 
 ## Setup
 
 1. **Clone repository**
+
    ```bash
    git clone https://github.com/your-org/docuflow.git
    cd docuflow
    ```
 2. **Configure backend** (`backend/src/main/resources/application.properties`)
+
    ```properties
    spring.datasource.url=jdbc:postgresql://localhost:5432/postgres
    spring.datasource.username=postgres
@@ -47,29 +49,47 @@ DocuFlow is a full-stack microservices platform featuring Spring Boot, Angular, 
    spring.servlet.multipart.max-request-size=50MB
    ```
 3. **Configure frontend** (`frontend/.env`)
+
    ```ini
    NG_APP_API_URL=http://localhost:8080/api
    NG_APP_WS_URL=ws://localhost:8080/ws/progress
    ```
 4. **Start RabbitMQ**
-   ```bash
-   ```
 
-docker-compose up -d
+Ensure RabbitMQ data persists across restarts by using Docker volumes in your `docker-compose.yml`. For example:
 
-````
-5. **Start PostgreSQL** (if not already running)
+```yaml
+services:
+  rabbitmq:
+    image: rabbitmq:3-management
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    volumes:
+      - rabbitmq-data:/var/lib/rabbitmq
+
+volumes:
+  rabbitmq-data:
+```
+
 ```bash
-docker run --name docuflow-postgres -e POSTGRES_PASSWORD=<DB_PASSWORD> -p 5432:5432 -d postgres
-````
+   docker-compose up -d
+```
 
+5. **Start PostgreSQL** (if not already running)
+
+   ```bash
+   docker run --name docuflow-postgres -e POSTGRES_PASSWORD=<DB_PASSWORD> -p 5432:5432 -d postgres
+   ```
 6. **Build & run backend**
+
    ```bash
    cd backend
    mvn clean package
    java -jar target/*.jar
    ```
 7. **Build & run frontend**
+
    ```bash
    cd frontend
    npm install
@@ -92,16 +112,12 @@ Include header `Authorization: Bearer <token>` for all `/api/files` routes.
 | `/api/files/upload` | POST   | Upload file for conversion                   |
 | `/files/{fileId}`   | GET    | Get presigned download URL or status message |
 
-- **Upload**: Returns `fileId` immediately.
-- **Download**: Returns HTTP 200 + `{ "url": "<presignedUrl>" }` if done, 202 + status if processing, or 404 if not found.
+* **Upload**: Returns `fileId` immediately.
+* **Download**: Returns HTTP 200 + `{ "url": "<presignedUrl>" }` if done, 202 + status if processing, or 404 if not found.
 
 ## WebSocket Progress
 
-- **URL**: `ws://<host>:8080/ws/progress`
-- **Message format**:
-  ```json
-  { "fileId": "...", "phase": "conversion|saving|done|error", "percent": 0-100, "message"?: "..." }
-  ```
+* **URL**: `ws://<host>:8080/ws/progress`
 
 ## Processing Flow
 
@@ -114,15 +130,37 @@ Include header `Authorization: Bearer <token>` for all `/api/files` routes.
 
 ## Configuration
 
-- **Max file size**: 50 MB
-- **RabbitMQ queue**: `file-processing-queue`
-- **Thread pool size**: 4 threads (defined in `FileProcessingConsumer`)
+* **Max file size**: 50 MB
+* **RabbitMQ queue**: `file-processing-queue`
+* **Thread pool size**: 4 threads (defined in `FileProcessingConsumer`)
 
 ## Monitoring & Logging
 
-- RabbitMQ UI at `http://localhost:15672`
-- SQL queries logged (`spring.jpa.show-sql=true`)
-- AWS SDK logs at DEBUG level
+* RabbitMQ UI at `http://localhost:15672`
+* SQL queries logged (`spring.jpa.show-sql=true`)
+* AWS SDK logs at DEBUG level
+
+## Testing
+
+DocuFlow includes three types of automated tests to ensure reliability and catch regressions early:
+
+* **Controller (Integration) Tests**: Run with Spring’s `WebMvcTest` slice to verify API endpoints and request/response flows.
+* **Repository Tests**: Use `@DataJpaTest` with an in-memory H2 database to validate JPA mappings and custom queries.
+* **Unit Tests**: Target service classes with plain JUnit to check core business logic in isolation.
+
+### Running Tests
+
+1. **Ensure Services are Available**: Start RabbitMQ (with volumes) and PostgreSQL using Docker Compose:
+
+   ```bash
+   docker-compose up -d rabbitmq postgres
+   ```
+2. **Execute All Tests**: From the `backend` directory, run:
+
+   ```bash
+   mvn test
+   ```
+3. **View Reports**: After execution, check the `target/surefire-reports` and `target/jacoco` directories for detailed test results and coverage reports.
 
 ## Contributing
 
@@ -134,8 +172,3 @@ Include header `Authorization: Bearer <token>` for all `/api/files` routes.
 ## License
 
 MIT (see [LICENSE](LICENSE))
-
-## Contact
-
-Hagai Yehoshafat — [hagai.yehosh@gmail.com](mailto\:hagai.yehosh@gmail.com) — [GitHub](https://github.com/hagai007)
-
