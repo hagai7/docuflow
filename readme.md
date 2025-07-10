@@ -118,11 +118,6 @@ Include header `Authorization: Bearer <token>` for all `/api/files` routes.
 ## WebSocket Progress
 
 * **URL**: `ws://<host>:8080/ws/progress`
-* **Message format**:
-
-  ```json
-  { "fileId": "...", "phase": "conversion|saving|done|error", "percent": 0-100, "message"?: "..." }
-  ```
 
 ## Processing Flow
 
