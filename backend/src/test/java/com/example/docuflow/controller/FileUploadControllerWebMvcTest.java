@@ -1,5 +1,6 @@
 package com.example.docuflow.controller;
 
+import com.example.docuflow.security.JwtUtil;
 import com.example.docuflow.service.FileStorageService;
 import org.junit.jupiter.api.Test;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
@@ -29,10 +30,13 @@ public class FileUploadControllerWebMvcTest {
     @MockBean
     private FileStorageService fileStorageService;
 
+    @MockBean
+    private JwtUtil jwtUtil; // Added to prevent bean-not-found error
 
     @Test
     void testUploadFile() throws Exception {
-        MockMultipartFile file = new MockMultipartFile("file", "file.txt", "text/plain", "hello world".getBytes());
+        MockMultipartFile file = new MockMultipartFile(
+                "file", "file.txt", "text/plain", "hello world".getBytes());
 
         when(fileStorageService.createFileRecord(any())).thenReturn("file123");
 

@@ -10,6 +10,7 @@ import org.mockito.ArgumentCaptor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -52,27 +53,23 @@ public class AuthControllerTest {
     void testLogin_success() {
         AuthRequest request = new AuthRequest("existinguser", "password456");
 
-        // tells mock authManager:
-        // "When authenticate(...) is called with any UsernamePasswordAuthenticationToken, do nothing, don't throw exceptions..."
-        // I'm only testing my controller’s behavior, not whether authentication (spring internal) actually works
-        doNothing().when(authManager).authenticate(any(UsernamePasswordAuthenticationToken.class));
+        // ✅ Correct way to mock a method that returns a value
+        when(authManager.authenticate(any(UsernamePasswordAuthenticationToken.class)))
+                .thenReturn(mock(Authentication.class));
+
         when(jwtUtil.generateToken("existinguser")).thenReturn("mock-jwt-token");
 
         ResponseEntity<AuthResponse> response = authController.login(request);
 
-        // creates a "net" that will capture any argument of type UsernamePasswordAuthenticationToken passed to the mocked method
         ArgumentCaptor<UsernamePasswordAuthenticationToken> captor =
                 ArgumentCaptor.forClass(UsernamePasswordAuthenticationToken.class);
 
-        // check if authManager.authenticate() was called
-        // and captures (into captor) the argument that was passed to it
         verify(authManager).authenticate(captor.capture());
 
         UsernamePasswordAuthenticationToken authToken = captor.getValue();
         assertEquals("existinguser", authToken.getPrincipal());
         assertEquals("password456", authToken.getCredentials());
 
-        // Verify JWT token generation
         verify(jwtUtil).generateToken("existinguser");
 
         assertNotNull(response);
